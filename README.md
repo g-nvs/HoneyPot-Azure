@@ -5,7 +5,7 @@
 The Azure Sentinel Lab objectives are aimed to gain practical hands-on with Azure environment and Services, like Sentinel or Log Analytics, as well as understanding the benefits of Honeypots for cybersecurity defenses.
 A honeypot serves as an intentionally vulnerable system designed to attract potential attackers, thereby enabling the collection of valuable information to analyze and mitigate cyber threats.
 
-![Azure_Sentinel_HoneyPot drawio](https://github.com/user-attachments/assets/de37dfd7-f2b7-40dd-8eaa-2756b76ee885)
+![Azure_Sentinel_HoneyPot drawio](https://github.com/user-attachments/assets/de37dfd7-f2b7-40dd-8eaa-2756b76ee885)</br>
 *Ref 1: Azure Lab Overview*
 
 ### Skills Learned
@@ -28,6 +28,23 @@ A honeypot serves as an intentionally vulnerable system designed to attract pote
 
 ## Steps
 
+![tpot_kibana1](https://github.com/user-attachments/assets/87e75076-56ce-4319-8d89-3f9cb8d36a2c)</br>
+*Ref 2: Main TPot Dashboard*
+
+![tpot_kibana2](https://github.com/user-attachments/assets/b0f91206-034d-401e-9228-82108b059fb9)</br>
+*Ref 3:  Main TPot Dashboard (continued)*
+
+![map_tpot](https://github.com/user-attachments/assets/29bb2452-4248-4c36-9ae4-e1494440fe76)</br>
+*Ref 4: Overview of Location Attacks and Types*
+
+![logstash_event_tosentinel](https://github.com/user-attachments/assets/9d950d02-7f8e-4cdd-b47c-d76b7512a15a)</br>
+*Ref 5: Azure Lab Overview*
+
+![Sentinel_workbook1](https://github.com/user-attachments/assets/08e33540-3e73-4625-b0f7-a53d16998c5f)</br>
+*Ref 6: Azure Lab Overview*
+
+![Sentinel_workbook2](https://github.com/user-attachments/assets/4294f1c9-b048-4bfc-a15f-69b59dff21fe)</br>
+*Ref 7: Azure Lab Overview*
 
 1. Azure Configuration and provisionning of first HoneyPot VM (Windows 10 with RDP Service open on the Internet)
 2. We create a new Log Analytics workspace that will gather Logs of the HoneyPot and that will be used by Azure Sentinel (SIEM)
@@ -60,6 +77,6 @@ I was interested in forwarding some of these attack and threat logs to my freshl
 I could provision an additional VM for Logstash purposes only along with Filebeat on TPOT, but in order to first test the integration, I decided to move on with Logstash installed directly on the TPOT Server.
 
 14. We download and install the Logstash version 8.14.0, available on the official Elastic site. Installation steps are described there as well.
-
+15. Next, we need to install a Logstash Plugin to be able to forward our logs to Sentinel. 
 
 
