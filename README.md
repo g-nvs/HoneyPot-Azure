@@ -46,6 +46,7 @@ A honeypot serves as an intentionally vulnerable system designed to attract pote
 ![Sentinel_workbook2](https://github.com/user-attachments/assets/4294f1c9-b048-4bfc-a15f-69b59dff21fe)</br>
 *Ref 7: Custom Dashboard created with Crowrie logs from our TPOT Server*
 
+
 1. Azure Configuration and provisionning of first HoneyPot VM (Windows 10 with RDP Service open on the Internet)
 2. We create a new Log Analytics workspace that will gather Logs of the HoneyPot and that will be used by Azure Sentinel (SIEM)
 3. Next, on Microsoft Defender we enable Defender for Servers and collect All Events.
