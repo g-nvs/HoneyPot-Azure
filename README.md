@@ -38,13 +38,13 @@ A honeypot serves as an intentionally vulnerable system designed to attract pote
 *Ref 4: Overview of Location Attacks and Types*
 
 ![logstash_event_tosentinel](https://github.com/user-attachments/assets/9d950d02-7f8e-4cdd-b47c-d76b7512a15a)</br>
-*Ref 5: Azure Lab Overview*
+*Ref 5: Logstash logs showing Crowrie (Telnet/SSH Honeypot) logs forwarding to Azure Sentinel*
 
 ![Sentinel_workbook1](https://github.com/user-attachments/assets/08e33540-3e73-4625-b0f7-a53d16998c5f)</br>
-*Ref 6: Azure Lab Overview*
+*Ref 6: Custom Map created with logs of failed RDP Auth in our Win10 VM*
 
 ![Sentinel_workbook2](https://github.com/user-attachments/assets/4294f1c9-b048-4bfc-a15f-69b59dff21fe)</br>
-*Ref 7: Azure Lab Overview*
+*Ref 7: Custom Dashboard created with Crowrie logs from our TPOT Server*
 
 1. Azure Configuration and provisionning of first HoneyPot VM (Windows 10 with RDP Service open on the Internet)
 2. We create a new Log Analytics workspace that will gather Logs of the HoneyPot and that will be used by Azure Sentinel (SIEM)
