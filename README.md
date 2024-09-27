@@ -29,25 +29,6 @@ A honeypot serves as an intentionally vulnerable system designed to attract pote
 
 ## Steps
 
-![tpot_kibana1](https://github.com/user-attachments/assets/87e75076-56ce-4319-8d89-3f9cb8d36a2c)</br>
-*Ref 2: Main TPot Dashboard*
-
-![tpot_kibana2](https://github.com/user-attachments/assets/b0f91206-034d-401e-9228-82108b059fb9)</br>
-*Ref 3:  Main TPot Dashboard (continued)*
-
-![map_tpot](https://github.com/user-attachments/assets/29bb2452-4248-4c36-9ae4-e1494440fe76)</br>
-*Ref 4: Overview of Location Attacks and Types*
-
-![logstash_event_tosentinel](https://github.com/user-attachments/assets/9d950d02-7f8e-4cdd-b47c-d76b7512a15a)</br>
-*Ref 5: Logstash logs showing Crowrie (Telnet/SSH Honeypot) logs forwarding to Azure Sentinel*
-
-![Sentinel_workbook1](https://github.com/user-attachments/assets/08e33540-3e73-4625-b0f7-a53d16998c5f)</br>
-*Ref 6: Custom Map created with logs of failed RDP Auth in our Win10 VM*
-
-![Sentinel_workbook2](https://github.com/user-attachments/assets/4294f1c9-b048-4bfc-a15f-69b59dff21fe)</br>
-*Ref 7: Custom Dashboard created with Crowrie logs from our TPOT Server*
-
-
 1. Azure Configuration and provisionning of first HoneyPot VM (Windows 10 with RDP Service open on the Internet)
 2. We create a new Log Analytics workspace that will gather Logs of the HoneyPot and that will be used by Azure Sentinel (SIEM)
 3. Next, on Microsoft Defender we enable Defender for Servers and collect All Events.
@@ -69,16 +50,56 @@ A honeypot serves as an intentionally vulnerable system designed to attract pote
 
 10. By adjusting the workbook, we select a Map type and make sure to provide the latitude/longitude. That's it.
 
+![Sentinel_workbook1](https://github.com/user-attachments/assets/08e33540-3e73-4625-b0f7-a53d16998c5f)</br>
+*Ref 2: Custom Map created with logs of failed RDP Auth in our Win10 VM*
+
+11. Additionally, we can install Sysmon and forward event data to our Sentinel for further insights.
+12. 
+
+![query_sysmon_1](https://github.com/user-attachments/assets/bad04a86-324a-47e6-acbd-c535a5b3c58c)</br>
+*Ref 3: Sysmon logs forwarded to Azure Logs - Atomic RedTeam T1003 Creds Dumping attack*
+
+![query_sysmon_2](https://github.com/user-attachments/assets/96b305d2-09d3-489c-895a-b3f23a801c2c)</br>
+*Ref 4: Sysmon logs forwarded to Azure Logs - Atomic RedTeam T1003 Creds Dumping attack (continued)*
+
+![query_sysmon_3](https://github.com/user-attachments/assets/25f9dcd8-595a-4623-8271-292b484f114b)</br>
+*Ref 5: Sysmon logs forwarded to Azure Logs - Atomic RedTeam T1003 Creds Dumping attack (continued)*
+
 The following Steps are dedicated to the configuration and steps made to install the TPOT Server and forward some logs to Sentinel.
 
 11. We create a new Linux VM. At least 8GB RAM will be necessary fo this one.
 12. Once provisionned, we simply follow the TPOT installation on the official GitHub link: https://github.com/telekom-security/tpotce. The installation is straightforward.
 13. After a reboot, TPot is ready and various dashboards and metrics are accessible through Kibana.
 
+![tpot_kibana1](https://github.com/user-attachments/assets/87e75076-56ce-4319-8d89-3f9cb8d36a2c)</br>
+*Ref 6: Main TPot Dashboard*
+
+![tpot_kibana2](https://github.com/user-attachments/assets/b0f91206-034d-401e-9228-82108b059fb9)</br>
+*Ref 7:  Main TPot Dashboard (continued)*
+
+![map_tpot](https://github.com/user-attachments/assets/29bb2452-4248-4c36-9ae4-e1494440fe76)</br>
+*Ref 8: Overview of Location Attacks and Types*
+
 I was interested in forwarding some of these attack and threat logs to my freshly configured Log Analytics/Sentinel instance. The easiest way was to forward data through Logstash.
 I could provision an additional VM for Logstash purposes only along with Filebeat on TPOT, but in order to first test the integration, I decided to move on with Logstash installed directly on the TPOT Server.
 
 14. We download and install the Logstash version 8.14.0, available on the official Elastic site. Installation steps are described there as well.
-15. Next, we need to install a Logstash Plugin to be able to forward our logs to Sentinel. 
+15. Next, we need to install a Logstash Plugin to be able to forward our logs to Sentinel. (https://learn.microsoft.com/en-us/azure/sentinel/connect-logstash-data-connection-rules#install-the-plugin)
+16. Once the install successful, we need to generate a sample JSON data via the Logstash pipeline. This sample is used to create our custom Data Collection Rule in the next steps.
+17. First, we create the Data Collection Endpoint to which Logstash will push the logs.
+18. We create a new DCR in Azure, specifying our previously created endpoint and the sample log file in the JSON format.
+19. It is needed to use the Transformation editor to populate a mandatory Timestamp field in the DCR wizard.
+`source
+| extend TimeGenerated = ls_timestamp`
+20. An application needs to be created, in order to retrieve a clientID, tenantID and a secretkey.
+21. Once the app created and the identifiers noted down, we assign the "Monitoring Metrics Publisher" role through the Azure Access Control.
+22. Then, on the Server, we edit the previous Logstash pipeline and save it inside /etc/logstash/conf.d/ directory.
+23. Finally, we verify that the pipeline runs without errors and we start the Logstash service.
+24. That's it. We can then exploit the new data in Analytics and Sentinel to create dashboards and queries.
 
+![logstash_event_tosentinel](https://github.com/user-attachments/assets/9d950d02-7f8e-4cdd-b47c-d76b7512a15a)</br>
+*Ref 9: Logstash logs showing Crowrie (Telnet/SSH Honeypot) logs forwarding to Azure Sentinel*
+
+![Sentinel_workbook2](https://github.com/user-attachments/assets/4294f1c9-b048-4bfc-a15f-69b59dff21fe)</br>
+*Ref 10: Custom Dashboard created with Crowrie logs from our TPOT Server*
 
