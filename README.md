@@ -25,6 +25,7 @@ A honeypot serves as an intentionally vulnerable system designed to attract pote
 - Kibana
 - 3rd Party Geolocation API (https://ipgeolocation.io/)
 - Sysmon
+- Spiderfoot for OSINT
 
 ## Steps
 
