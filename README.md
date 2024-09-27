@@ -26,6 +26,7 @@ A honeypot serves as an intentionally vulnerable system designed to attract pote
 - 3rd Party Geolocation API (https://ipgeolocation.io/)
 - Sysmon
 - Spiderfoot for additional OSINT on attackers
+- Atomic RedTeam (https://github.com/redcanaryco/atomic-red-team)
 
 ## Steps
 
@@ -46,7 +47,8 @@ A honeypot serves as an intentionally vulnerable system designed to attract pote
  sourcehost = extract(@"sourcehost:([^,]+)", 1, RawData), state = extract(@"state:([^,]+)", 1, RawData), 
  label = extract(@"label:([^,]+)", 1, RawData), destination = extract(@"destinationhost:([^,]+)", 1, RawData), 
  country = extract(@"country:([^,]+)", 1, RawData) | where destination != "samplehost" | where sourcehost != "" 
- | summarize event_count=count() by timestamp, label, country, state, sourcehost, username, destination, longitude, latitude`
+ | summarize event_count=count() by timestamp, label, country, state, sourcehost, username, destination, longitude, latitude
+ `
 
 10. By adjusting the workbook, we select a Map type and make sure to provide the latitude/longitude. That's it.
 
@@ -54,7 +56,17 @@ A honeypot serves as an intentionally vulnerable system designed to attract pote
 *Ref 2: Custom Map created with logs of failed RDP Auth in our Win10 VM*
 
 11. Additionally, we can install Sysmon and forward event data to our Sentinel for further insights.
-12. 
+12. Once Sysmon installed on our Win10 VM, we create a new Data Collection Rule. We specify the XPATH for Sysmon logs.
+13. Then, we just need to wait for the logs to come by to our Analytics. We can check if they are present by running the following query.
+`Event
+| where EventLog == "Microsoft-Windows-Sysmon/Operational"
+| take 10
+`
+14. In Sentinel, we use the following query available <a href="https://raw.githubusercontent.com/OTRF/OSSEM/master/resources/parsers/SysmonKQLParserV13.22.txt">here</a>. Itparses the Sysmon logs accordingly within Analytics.
+We save it as a function.
+15. We can use the Sysmon function and filter the query easily with Kusto (KQL) in Sentinel to check for malicious processes and executions.
+16. Installing Atomic RedTeam allows to generate interesting data for Sysmon to push and for us to analyze afterwards. (https://github.com/redcanaryco/atomic-red-team)
+I decided to launch the T0003 Creds Dumping technique to verify that we successfully gather all the data for analysis.
 
 ![query_sysmon_1](https://github.com/user-attachments/assets/bad04a86-324a-47e6-acbd-c535a5b3c58c)</br>
 *Ref 3: Sysmon logs forwarded to Azure Logs - Atomic RedTeam T1003 Creds Dumping attack*
@@ -90,12 +102,13 @@ I could provision an additional VM for Logstash purposes only along with Filebea
 18. We create a new DCR in Azure, specifying our previously created endpoint and the sample log file in the JSON format.
 19. It is needed to use the Transformation editor to populate a mandatory Timestamp field in the DCR wizard.
 `source
-| extend TimeGenerated = ls_timestamp`
-20. An application needs to be created, in order to retrieve a clientID, tenantID and a secretkey.
-21. Once the app created and the identifiers noted down, we assign the "Monitoring Metrics Publisher" role through the Azure Access Control.
-22. Then, on the Server, we edit the previous Logstash pipeline and save it inside /etc/logstash/conf.d/ directory.
-23. Finally, we verify that the pipeline runs without errors and we start the Logstash service.
-24. That's it. We can then exploit the new data in Analytics and Sentinel to create dashboards and queries.
+| extend TimeGenerated = ls_timestamp
+`
+21. An application needs to be created, in order to retrieve a clientID, tenantID and a secretkey.
+22. Once the app created and the identifiers noted down, we assign the "Monitoring Metrics Publisher" role through the Azure Access Control.
+23. Then, on the Server, we edit the previous Logstash pipeline and save it inside /etc/logstash/conf.d/ directory.
+24. Finally, we verify that the pipeline runs without errors and we start the Logstash service.
+25. That's it. We can then exploit the new data in Analytics and Sentinel to create dashboards and queries.
 
 ![logstash_event_tosentinel](https://github.com/user-attachments/assets/9d950d02-7f8e-4cdd-b47c-d76b7512a15a)</br>
 *Ref 9: Logstash logs showing Crowrie (Telnet/SSH Honeypot) logs forwarding to Azure Sentinel*
